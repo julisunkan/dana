@@ -2,7 +2,10 @@
 // Handles UI interactions, form validation, and user experience enhancements
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Data Analysis Platform - Main JS Loaded');
+    console.log('DataAnalyzer Mobile App - Main JS Loaded');
+    
+    // Initialize mobile app features
+    initializeMobileApp();
     
     // Initialize tooltips
     initializeTooltips();
@@ -18,6 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize chart interactions
     initializeChartInteractions();
+    
+    // Initialize mobile toasts
+    initializeMobileToasts();
+    
+    // Update time
+    updateTime();
+    
+    // Set initial back button state
+    updateBackButton();
 });
 
 /**
@@ -459,4 +471,146 @@ if ('performance' in window) {
             console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
         }, 0);
     });
+}
+
+/**
+ * Initialize mobile app features
+ */
+function initializeMobileApp() {
+    // Set viewport height for mobile browsers
+    const setViewportHeight = () => {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    
+    // Prevent pull-to-refresh on mobile
+    document.body.addEventListener('touchmove', function(e) {
+        if (e.target === document.body) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Add haptic feedback for buttons (mobile only)
+    const buttons = document.querySelectorAll('button, .btn, .nav-item');
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', function() {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        });
+    });
+    
+    // Handle active states for mobile
+    document.addEventListener('touchstart', function() {}, { passive: true });
+}
+
+/**
+ * Update back button visibility
+ */
+function updateBackButton() {
+    const backBtn = document.querySelector('.btn-back');
+    if (backBtn) {
+        const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index';
+        const hasHistory = window.history.length > 1;
+        
+        if (!isHomePage && hasHistory) {
+            backBtn.style.display = 'block';
+        } else {
+            backBtn.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Update time in status bar
+ */
+function updateTime() {
+    const timeElement = document.getElementById('current-time');
+    if (timeElement) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        });
+        timeElement.textContent = timeString;
+    }
+}
+
+// Update time every minute
+setInterval(updateTime, 60000);
+
+/**
+ * Initialize mobile toasts
+ */
+function initializeMobileToasts() {
+    const toasts = document.querySelectorAll('.mobile-toast');
+    toasts.forEach((toast, index) => {
+        // Auto-hide after 4 seconds
+        setTimeout(() => {
+            toast.style.animation = 'slideUp 0.3s ease forwards';
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 4000 + (index * 500));
+    });
+}
+
+/**
+ * Show mobile toast
+ */
+function showMobileToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `mobile-toast toast-${type}`;
+    
+    const icon = getToastIcon(type);
+    toast.innerHTML = `
+        <i class="fas fa-${icon}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto-hide after 4 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideUp 0.3s ease forwards';
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 4000);
+}
+
+/**
+ * Get toast icon
+ */
+function getToastIcon(type) {
+    const icons = {
+        'success': 'check-circle',
+        'error': 'exclamation-triangle',
+        'warning': 'exclamation-triangle',
+        'info': 'info-circle'
+    };
+    return icons[type] || 'info-circle';
+}
+
+// Add slideUp animation CSS if not exists
+if (!document.querySelector('#mobile-animations')) {
+    const style = document.createElement('style');
+    style.id = 'mobile-animations';
+    style.textContent = `
+        @keyframes slideUp {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
