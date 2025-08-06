@@ -67,79 +67,7 @@
     </div>
 </div>
 
-<!-- Chart Generation Controls -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h6 class="mb-0">
-            <i class="fas fa-chart-bar me-2"></i>
-            Custom Chart Generator
-        </h6>
-    </div>
-    <div class="card-body">
-        <form id="chart-form" class="row g-3">
-            <div class="col-md-3">
-                <label for="chart-type" class="form-label">Chart Type</label>
-                <select class="form-select" id="chart-type" required>
-                    <option value="">Select type...</option>
-                    <option value="bar">Bar Chart</option>
-                    <option value="line">Line Chart</option>
-                    <option value="scatter">Scatter Plot</option>
-                    <option value="histogram">Histogram</option>
-                    <option value="box">Box Plot</option>
-                    <option value="pie">Pie Chart</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="x-column" class="form-label">X-Axis Column</label>
-                <select class="form-select" id="x-column">
-                    <option value="">Select column...</option>
-                    {% for column in columns %}
-                    <option value="{{ column }}">{{ column }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="y-column" class="form-label">Y-Axis Column</label>
-                <select class="form-select" id="y-column">
-                    <option value="">Select column...</option>
-                    {% for column in columns %}
-                    <option value="{{ column }}">{{ column }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="chart-title" class="form-label">Chart Title</label>
-                <input type="text" class="form-control" id="chart-title" placeholder="Enter title...">
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-chart-line me-1"></i>
-                    Generate Chart
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Custom Chart Container -->
-<div id="custom-chart-container" style="display: none;" class="mb-4">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h6 class="mb-0" id="custom-chart-title">Custom Chart</h6>
-            <div>
-                <button class="btn btn-sm btn-outline-secondary me-1" onclick="editChartTitle()">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-success" onclick="downloadChart('custom-chart')">
-                    <i class="fas fa-download"></i>
-                </button>
-            </div>
-        </div>
-        <div class="card-body">
-            <div id="custom-chart"></div>
-        </div>
-    </div>
-</div>
 
 <!-- Auto-Generated Charts -->
 {% if charts %}
