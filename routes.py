@@ -12,7 +12,11 @@ logger = logging.getLogger(__name__)
 
 # Initialize processors
 data_processor = DataProcessor()
-chart_generator = ChartGenerator()
+try:
+    chart_generator = ChartGenerator()
+except ImportError as e:
+    logger.error(f"Error importing chart generator: {e}")
+    chart_generator = None
 export_handler = ExportHandler()
 
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
@@ -177,55 +181,71 @@ def dashboard():
         numeric_columns = df.select_dtypes(include=['number']).columns
         categorical_columns = df.select_dtypes(include=['object']).columns
         
-        # Create various chart types
-        if len(numeric_columns) > 0:
-            # Histogram for first numeric column
-            hist_chart = chart_generator.create_histogram(df, numeric_columns[0])
-            if hist_chart:
-                charts.append({
-                    'title': f'Distribution of {numeric_columns[0]}',
-                    'chart': hist_chart,
-                    'type': 'histogram'
-                })
+        # Only create charts if chart_generator is available
+        if chart_generator is not None:
+            # Create various chart types
+            if len(numeric_columns) > 0:
+                # Histogram for first numeric column
+                try:
+                    hist_chart = chart_generator.create_histogram(df, numeric_columns[0])
+                    if hist_chart:
+                        charts.append({
+                            'title': f'Distribution of {numeric_columns[0]}',
+                            'chart': hist_chart,
+                            'type': 'histogram'
+                        })
+                except Exception as e:
+                    logger.error(f"Error creating histogram: {e}")
+                
+                # Box plot for numeric columns
+                if len(numeric_columns) >= 1:
+                    try:
+                        box_chart = chart_generator.create_box_plot(df, list(numeric_columns[:3]))
+                        if box_chart:
+                            charts.append({
+                                'title': 'Box Plot of Numeric Columns',
+                                'chart': box_chart,
+                                'type': 'box'
+                            })
+                    except Exception as e:
+                        logger.error(f"Error creating box plot: {e}")
             
-            # Box plot for numeric columns
-            if len(numeric_columns) >= 1:
-                box_chart = chart_generator.create_box_plot(df, list(numeric_columns[:3]))
-                if box_chart:
-                    charts.append({
-                        'title': 'Box Plot of Numeric Columns',
-                        'chart': box_chart,
-                        'type': 'box'
-                    })
-        
-        # Bar chart for categorical data
-        if len(categorical_columns) > 0:
-            cat_col = categorical_columns[0]
-            value_counts = df[cat_col].value_counts().head(10)
-            bar_chart = chart_generator.create_bar_chart(
-                value_counts.index.tolist(),
-                value_counts.values.tolist(),
-                cat_col,
-                'Count'
-            )
-            if bar_chart:
-                charts.append({
-                    'title': f'Distribution of {cat_col}',
-                    'chart': bar_chart,
-                    'type': 'bar'
-                })
-        
-        # Scatter plot if we have at least 2 numeric columns
-        if len(numeric_columns) >= 2:
-            scatter_chart = chart_generator.create_scatter_plot(
-                df, numeric_columns[0], numeric_columns[1]
-            )
-            if scatter_chart:
-                charts.append({
-                    'title': f'{numeric_columns[0]} vs {numeric_columns[1]}',
-                    'chart': scatter_chart,
-                    'type': 'scatter'
-                })
+            # Bar chart for categorical data
+            if len(categorical_columns) > 0:
+                try:
+                    cat_col = categorical_columns[0]
+                    value_counts = df[cat_col].value_counts().head(10)
+                    bar_chart = chart_generator.create_bar_chart(
+                        value_counts.index.tolist(),
+                        value_counts.values.tolist(),
+                        cat_col,
+                        'Count'
+                    )
+                    if bar_chart:
+                        charts.append({
+                            'title': f'Distribution of {cat_col}',
+                            'chart': bar_chart,
+                            'type': 'bar'
+                        })
+                except Exception as e:
+                    logger.error(f"Error creating bar chart: {e}")
+            
+            # Scatter plot if we have at least 2 numeric columns
+            if len(numeric_columns) >= 2:
+                try:
+                    scatter_chart = chart_generator.create_scatter_plot(
+                        df, numeric_columns[0], numeric_columns[1]
+                    )
+                    if scatter_chart:
+                        charts.append({
+                            'title': f'{numeric_columns[0]} vs {numeric_columns[1]}',
+                            'chart': scatter_chart,
+                            'type': 'scatter'
+                        })
+                except Exception as e:
+                    logger.error(f"Error creating scatter plot: {e}")
+        else:
+            logger.warning("Chart generator not available - no charts will be created")
         
         return render_template('dashboard.html', 
                              stats=stats,
