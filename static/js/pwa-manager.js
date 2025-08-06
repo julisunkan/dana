@@ -1,4 +1,4 @@
-// PWA Manager for Data Analysis Platform
+// PWA Manager for Advanced Data Analyzer
 // Handles service worker registration, install prompts, and offline functionality
 
 class PWAManager {

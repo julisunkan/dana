@@ -1,8 +1,8 @@
-// Main JavaScript for Data Analysis Platform
+// Main JavaScript for Advanced Data Analyzer
 // Handles UI interactions, form validation, and user experience enhancements
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DataAnalyzer Mobile App - Main JS Loaded');
+    console.log('Advanced Data Analyzer Mobile App - Main JS Loaded');
     
     // Initialize mobile app features
     initializeMobileApp();
