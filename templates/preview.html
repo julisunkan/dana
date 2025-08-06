@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Data Preview - Data Analysis Platform{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-eye me-2"></i>
+        Data Preview
+    </h2>
+    <div>
+        <a href="{{ url_for('clean') }}" class="btn btn-primary">
+            <i class="fas fa-broom me-1"></i>
+            Clean Data
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-success">
+            <i class="fas fa-chart-bar me-1"></i>
+            Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- File Information -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h5 class="alert-heading">
+                <i class="fas fa-file-alt me-2"></i>
+                {{ filename }}
+            </h5>
+            <hr>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Rows:</strong> {{ stats.shape[0] | default(0) | number_format }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Columns:</strong> {{ stats.shape[1] | default(0) | number_format }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Duplicates:</strong> {{ stats.duplicate_rows | default(0) | number_format }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Memory:</strong> {{ (stats.memory_usage | default(0) / 1024 / 1024) | round(2) }} MB
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-list-ol"></i>
+            </div>
+            <div class="stat-content">
+                <h6>Numeric Columns</h6>
+                <h4>{{ stats.numeric_columns | length }}</h4>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-font"></i>
+            </div>
+            <div class="stat-content">
+                <h6>Text Columns</h6>
+                <h4>{{ stats.categorical_columns | length }}</h4>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="stat-content">
+                <h6>Date Columns</h6>
+                <h4>{{ stats.datetime_columns | length }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="card shadow">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-table me-2"></i>
+            Data Sample (First 20 rows)
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        {% for column in columns %}
+                        <th class="text-nowrap">
+                            {{ column }}
+                            {% if column in stats.missing_values and stats.missing_values[column] > 0 %}
+                            <i class="fas fa-exclamation-triangle text-warning ms-1" 
+                               title="{{ stats.missing_values[column] }} missing values"></i>
+                            {% endif %}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for column in columns %}
+                        <td class="text-nowrap">
+                            {% if row[column] is none or row[column] == '' %}
+                            <span class="text-muted"><em>missing</em></span>
+                            {% else %}
+                            {{ row[column] }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Column Information -->
+{% if stats.describe %}
+<div class="mt-4">
+    <h5>
+        <i class="fas fa-chart-bar me-2"></i>
+        Numeric Column Statistics
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Statistic</th>
+                    {% for column in stats.describe.keys() %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max'] %}
+                <tr>
+                    <th>{{ stat.title() }}</th>
+                    {% for column in stats.describe.keys() %}
+                    <td>
+                        {% if stats.describe[column][stat] is number %}
+                        {{ "%.2f" | format(stats.describe[column][stat]) }}
+                        {% else %}
+                        {{ stats.describe[column][stat] }}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- Missing Values Summary -->
+{% set missing_count = stats.missing_values.values() | sum %}
+{% if missing_count > 0 %}
+<div class="mt-4">
+    <div class="alert alert-warning">
+        <h6 class="alert-heading">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Missing Values Detected
+        </h6>
+        <p class="mb-2">Your dataset contains {{ missing_count }} missing values across the following columns:</p>
+        <div class="row">
+            {% for column, count in stats.missing_values.items() %}
+                {% if count > 0 %}
+                <div class="col-md-6 col-lg-4">
+                    <strong>{{ column }}:</strong> {{ count }} missing
+                    ({{ "%.1f" | format((count / stats.shape[0]) * 100) }}%)
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <hr>
+        <p class="mb-0">
+            <a href="{{ url_for('clean') }}" class="btn btn-warning btn-sm">
+                <i class="fas fa-broom me-1"></i>
+                Clean Data Now
+            </a>
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Next Steps -->
+<div class="mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="card-title">
+                <i class="fas fa-arrow-right me-2"></i>
+                Next Steps
+            </h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="{{ url_for('clean') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-broom me-2"></i>
+                        Clean and prepare your data
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success w-100 mb-2">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Proceed to analysis dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

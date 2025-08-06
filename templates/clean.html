@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Data Cleaning - Data Analysis Platform{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-broom me-2"></i>
+        Data Cleaning
+    </h2>
+    <div>
+        <a href="{{ url_for('preview') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>
+            Back to Preview
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-success">
+            <i class="fas fa-chart-bar me-1"></i>
+            Skip to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Data Quality Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-check me-2"></i>
+                    Data Quality Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="quality-metric">
+                            <div class="metric-value">{{ quality_info.total_rows | number_format }}</div>
+                            <div class="metric-label">Total Rows</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="quality-metric">
+                            <div class="metric-value">{{ quality_info.total_columns | number_format }}</div>
+                            <div class="metric-label">Total Columns</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="quality-metric">
+                            <div class="metric-value text-warning">{{ quality_info.duplicate_rows | number_format }}</div>
+                            <div class="metric-label">Duplicate Rows</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="quality-metric">
+                            <div class="metric-value text-danger">{{ quality_info.missing_data | length }}</div>
+                            <div class="metric-label">Columns with Missing Data</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cleaning Options Form -->
+<form method="POST" id="cleaning-form">
+    <div class="row g-4">
+        <!-- Missing Values Section -->
+        {% if quality_info.missing_data %}
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-question-circle me-2"></i>
+                        Missing Values ({{ quality_info.missing_data | length }} columns affected)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Missing values details -->
+                    <div class="missing-values-list mb-3">
+                        {% for column, info in quality_info.missing_data.items() %}
+                        <div class="missing-item">
+                            <strong>{{ column }}</strong>
+                            <span class="badge bg-warning">{{ info.count }} missing ({{ info.percentage }}%)</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Missing values handling options -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="handle_missing" id="handle_missing">
+                        <label class="form-check-label" for="handle_missing">
+                            Handle missing values
+                        </label>
+                    </div>
+                    
+                    <div class="missing-strategies" style="display: none;">
+                        <label class="form-label">Choose strategy:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="missing_strategy" id="drop_missing" value="drop" checked>
+                            <label class="form-check-label" for="drop_missing">
+                                Remove rows with missing values
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="missing_strategy" id="fill_mean" value="fill_mean">
+                            <label class="form-check-label" for="fill_mean">
+                                Fill numeric columns with mean values
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="missing_strategy" id="fill_median" value="fill_median">
+                            <label class="form-check-label" for="fill_median">
+                                Fill numeric columns with median values
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="missing_strategy" id="fill_mode" value="fill_mode">
+                            <label class="form-check-label" for="fill_mode">
+                                Fill categorical columns with most frequent values
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Duplicates and Outliers Section -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-filter me-2"></i>
+                        Data Filtering Options
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Duplicate removal -->
+                    {% if quality_info.duplicate_rows > 0 %}
+                    <div class="cleaning-option mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remove_duplicates" id="remove_duplicates">
+                            <label class="form-check-label" for="remove_duplicates">
+                                Remove duplicate rows
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            Found {{ quality_info.duplicate_rows }} duplicate rows
+                        </small>
+                    </div>
+                    {% else %}
+                    <div class="cleaning-option mb-3">
+                        <div class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            No duplicate rows found
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Outlier removal -->
+                    {% if quality_info.outliers %}
+                    <div class="cleaning-option mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remove_outliers" id="remove_outliers">
+                            <label class="form-check-label" for="remove_outliers">
+                                Remove statistical outliers
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            Outliers detected in {{ quality_info.outliers | length }} columns
+                        </small>
+                        
+                        <!-- Outlier details -->
+                        <div class="outliers-list mt-2">
+                            {% for column, info in quality_info.outliers.items() %}
+                            <div class="outlier-item">
+                                <strong>{{ column }}:</strong> {{ info.count }} outliers ({{ info.percentage }}%)
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="cleaning-option mb-3">
+                        <div class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            No significant outliers detected
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="mb-3">Apply Cleaning Operations</h6>
+                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-magic me-2"></i>
+                        Clean Data
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-success btn-lg">
+                        <i class="fas fa-forward me-2"></i>
+                        Skip Cleaning
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Data Type Information -->
+<div class="mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>
+                Column Data Types
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for column, dtype in quality_info.data_types.items() %}
+                <div class="col-md-6 col-lg-4 mb-2">
+                    <div class="data-type-item">
+                        <strong>{{ column }}:</strong>
+                        <span class="badge bg-secondary">{{ dtype }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Handle missing values checkbox
+document.getElementById('handle_missing').addEventListener('change', function() {
+    const strategiesDiv = document.querySelector('.missing-strategies');
+    if (this.checked) {
+        strategiesDiv.style.display = 'block';
+    } else {
+        strategiesDiv.style.display = 'none';
+    }
+});
+
+// Form submission with confirmation
+document.getElementById('cleaning-form').addEventListener('submit', function(e) {
+    const checkedOptions = [];
+    
+    if (document.getElementById('handle_missing') && document.getElementById('handle_missing').checked) {
+        const strategy = document.querySelector('input[name="missing_strategy"]:checked').value;
+        checkedOptions.push(`Handle missing values (${strategy})`);
+    }
+    
+    if (document.getElementById('remove_duplicates') && document.getElementById('remove_duplicates').checked) {
+        checkedOptions.push('Remove duplicate rows');
+    }
+    
+    if (document.getElementById('remove_outliers') && document.getElementById('remove_outliers').checked) {
+        checkedOptions.push('Remove outliers');
+    }
+    
+    if (checkedOptions.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one cleaning operation, or skip to the dashboard.');
+        return false;
+    }
+    
+    const message = `You are about to apply the following cleaning operations:\n\n${checkedOptions.join('\n')}\n\nThis may modify your original data. Continue?`;
+    
+    if (!confirm(message)) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{% endblock %}

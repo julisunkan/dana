@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - Data Analysis Platform{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-chart-line me-2"></i>
+        Analytics Dashboard
+    </h2>
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="fas fa-download me-1"></i>
+            Export
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('export_data', format='csv') }}">
+                <i class="fas fa-file-csv me-2"></i>CSV Format
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('export_data', format='xlsx') }}">
+                <i class="fas fa-file-excel me-2"></i>Excel Format
+            </a></li>
+            <li><a class="dropdown-item" href="{{ url_for('export_data', format='json') }}">
+                <i class="fas fa-file-code me-2"></i>JSON Format
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ url_for('export_summary') }}">
+                <i class="fas fa-file-alt me-2"></i>Analysis Report
+            </a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- File Information -->
+<div class="alert alert-info mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h6 class="alert-heading mb-1">
+                <i class="fas fa-file-alt me-2"></i>
+                Current Dataset: {{ filename }}
+            </h6>
+            <div class="row">
+                <div class="col-sm-3">
+                    <strong>Rows:</strong> {{ stats.shape[0] | number_format }}
+                </div>
+                <div class="col-sm-3">
+                    <strong>Columns:</strong> {{ stats.shape[1] | number_format }}
+                </div>
+                <div class="col-sm-3">
+                    <strong>Numeric:</strong> {{ stats.numeric_columns | length }}
+                </div>
+                <div class="col-sm-3">
+                    <strong>Text:</strong> {{ stats.categorical_columns | length }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{{ url_for('clean') }}" class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-broom me-1"></i>
+                Clean Data
+            </a>
+            <a href="{{ url_for('upload') }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-upload me-1"></i>
+                Upload New
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Generation Controls -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>
+            Custom Chart Generator
+        </h6>
+    </div>
+    <div class="card-body">
+        <form id="chart-form" class="row g-3">
+            <div class="col-md-3">
+                <label for="chart-type" class="form-label">Chart Type</label>
+                <select class="form-select" id="chart-type" required>
+                    <option value="">Select type...</option>
+                    <option value="bar">Bar Chart</option>
+                    <option value="line">Line Chart</option>
+                    <option value="scatter">Scatter Plot</option>
+                    <option value="histogram">Histogram</option>
+                    <option value="box">Box Plot</option>
+                    <option value="pie">Pie Chart</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="x-column" class="form-label">X-Axis Column</label>
+                <select class="form-select" id="x-column">
+                    <option value="">Select column...</option>
+                    {% for column in columns %}
+                    <option value="{{ column }}">{{ column }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="y-column" class="form-label">Y-Axis Column</label>
+                <select class="form-select" id="y-column">
+                    <option value="">Select column...</option>
+                    {% for column in columns %}
+                    <option value="{{ column }}">{{ column }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="chart-title" class="form-label">Chart Title</label>
+                <input type="text" class="form-control" id="chart-title" placeholder="Enter title...">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Generate Chart
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Chart Container -->
+<div id="custom-chart-container" style="display: none;" class="mb-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0" id="custom-chart-title">Custom Chart</h6>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="editChartTitle()">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" onclick="downloadChart('custom-chart')">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="custom-chart"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto-Generated Charts -->
+{% if charts %}
+<div class="row g-4">
+    {% for chart in charts %}
+    <div class="col-lg-6">
+        <div class="card chart-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">{{ chart.title }}</h6>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-1" onclick="editChartTitle(this, '{{ chart.title }}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="downloadChart('chart-{{ loop.index }}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="chart-{{ loop.index }}">
+                    {{ chart.chart | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <div class="empty-state">
+        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+        <h4>No Charts Generated</h4>
+        <p class="text-muted">
+            Unable to automatically generate charts from your data. 
+            Use the custom chart generator above to create visualizations.
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Statistics Summary -->
+{% if stats.describe %}
+<div class="mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="fas fa-calculator me-2"></i>
+                Statistical Summary
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Statistic</th>
+                            {% for column in stats.describe.keys() %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max'] %}
+                        <tr>
+                            <th>{{ stat.title() }}</th>
+                            {% for column in stats.describe.keys() %}
+                            <td>
+                                {% if stats.describe[column][stat] is number %}
+                                {{ "%.2f" | format(stats.describe[column][stat]) }}
+                                {% else %}
+                                {{ stats.describe[column][stat] }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Chart generation form handler
+document.getElementById('chart-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const chartType = document.getElementById('chart-type').value;
+    const xColumn = document.getElementById('x-column').value;
+    const yColumn = document.getElementById('y-column').value;
+    const title = document.getElementById('chart-title').value || `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart`;
+    
+    if (!chartType) {
+        alert('Please select a chart type');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generating...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/generate_chart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chart_type: chartType,
+                x_column: xColumn,
+                y_column: yColumn,
+                title: title
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Display the chart
+            document.getElementById('custom-chart').innerHTML = data.chart;
+            document.getElementById('custom-chart-title').textContent = data.title;
+            document.getElementById('custom-chart-container').style.display = 'block';
+            
+            // Scroll to chart
+            document.getElementById('custom-chart-container').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert('Error generating chart: ' + data.error);
+        }
+    } catch (error) {
+        alert('Error generating chart: ' + error.message);
+    } finally {
+        // Restore button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+// Chart type change handler for dynamic column requirements
+document.getElementById('chart-type').addEventListener('change', function() {
+    const chartType = this.value;
+    const yColumnDiv = document.getElementById('y-column').parentElement;
+    
+    // Some chart types don't require Y column
+    if (chartType === 'histogram' || chartType === 'pie') {
+        yColumnDiv.style.display = 'none';
+        document.getElementById('y-column').required = false;
+    } else {
+        yColumnDiv.style.display = 'block';
+        document.getElementById('y-column').required = chartType === 'scatter' || chartType === 'line';
+    }
+});
+
+// Edit chart title function
+function editChartTitle(button = null, currentTitle = '') {
+    const title = currentTitle || (button ? button.closest('.card-header').querySelector('h6').textContent : document.getElementById('custom-chart-title').textContent);
+    const newTitle = prompt('Enter new chart title:', title);
+    
+    if (newTitle && newTitle.trim()) {
+        if (button) {
+            button.closest('.card-header').querySelector('h6').textContent = newTitle.trim();
+        } else {
+            document.getElementById('custom-chart-title').textContent = newTitle.trim();
+        }
+    }
+}
+
+// Download chart as PNG function
+function downloadChart(chartId) {
+    const chartElement = document.getElementById(chartId);
+    
+    if (chartElement) {
+        // Find the Plotly chart within the element
+        const plotlyDiv = chartElement.querySelector('.plotly-graph-div') || chartElement;
+        
+        if (plotlyDiv && typeof Plotly !== 'undefined') {
+            const filename = `chart_${Date.now()}.png`;
+            
+            Plotly.downloadImage(plotlyDiv, {
+                format: 'png',
+                width: 1200,
+                height: 600,
+                filename: filename
+            }).catch(error => {
+                console.error('Error downloading chart:', error);
+                alert('Error downloading chart. Please try again.');
+            });
+        } else {
+            alert('Chart not found or Plotly not loaded.');
+        }
+    }
+}
+
+// Auto-resize charts when window resizes
+window.addEventListener('resize', function() {
+    if (typeof Plotly !== 'undefined') {
+        const charts = document.querySelectorAll('.plotly-graph-div');
+        charts.forEach(chart => {
+            Plotly.Plots.resize(chart);
+        });
+    }
+});
+</script>
+{% endblock %}

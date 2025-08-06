@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Data Analysis Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-chart-line text-primary me-3"></i>
+                Data Analysis Platform
+            </h1>
+            <p class="lead text-muted mb-4">
+                Upload, clean, analyze, and visualize your data with our powerful web-based platform. 
+                Get insights from your CSV and Excel files in minutes!
+            </p>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload me-2"></i>
+                Get Started
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-3">
+        <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+                <i class="fas fa-file-upload"></i>
+            </div>
+            <h5>Easy Upload</h5>
+            <p class="text-muted">
+                Drag and drop CSV or Excel files. Automatic encoding detection for seamless import.
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+                <i class="fas fa-broom"></i>
+            </div>
+            <h5>Data Cleaning</h5>
+            <p class="text-muted">
+                Handle missing values, remove duplicates, and detect outliers automatically.
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h5>Visualizations</h5>
+            <p class="text-muted">
+                Generate interactive charts: bar, line, scatter, pie, box plots, and histograms.
+            </p>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="feature-card text-center h-100">
+            <div class="feature-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <h5>Export Results</h5>
+            <p class="text-muted">
+                Download cleaned data and comprehensive analysis reports in multiple formats.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="workflow-section">
+    <h2 class="text-center mb-4">
+        <i class="fas fa-cogs me-2"></i>
+        How It Works
+    </h2>
+    
+    <div class="row g-4">
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="workflow-step text-center">
+                <div class="step-number">1</div>
+                <i class="fas fa-file-upload step-icon"></i>
+                <h6>Upload Data</h6>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="workflow-step text-center">
+                <div class="step-number">2</div>
+                <i class="fas fa-eye step-icon"></i>
+                <h6>Preview</h6>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="workflow-step text-center">
+                <div class="step-number">3</div>
+                <i class="fas fa-broom step-icon"></i>
+                <h6>Clean Data</h6>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="workflow-step text-center">
+                <div class="step-number">4</div>
+                <i class="fas fa-chart-bar step-icon"></i>
+                <h6>Analyze</h6>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="workflow-step text-center">
+                <div class="step-number">5</div>
+                <i class="fas fa-chart-line step-icon"></i>
+                <h6>Visualize</h6>
+            </div>
+        </div>
+        
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="workflow-step text-center">
+                <div class="step-number">6</div>
+                <i class="fas fa-download step-icon"></i>
+                <h6>Export</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not session.current_file %}
+<div class="cta-section text-center mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <h3 class="mb-3">Ready to analyze your data?</h3>
+            <p class="text-muted mb-4">
+                Upload your first file and discover insights in your data today!
+            </p>
+            <a href="{{ url_for('upload') }}" class="btn btn-success btn-lg">
+                <i class="fas fa-rocket me-2"></i>
+                Start Analysis
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="current-file-section">
+    <div class="alert alert-info">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h5 class="alert-heading mb-1">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Current File: {{ session.original_filename }}
+                </h5>
+                <p class="mb-0">Continue working with your uploaded data</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    View Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

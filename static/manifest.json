@@ -1,0 +1,97 @@
+{
+  "name": "Data Analysis Platform",
+  "short_name": "DataAnalysis",
+  "description": "Upload, clean, analyze, and visualize your data with our powerful web-based platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#4e73df",
+  "theme_color": "#4e73df",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "business"],
+  "screenshots": [
+    {
+      "src": "/static/icons/icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "form_factor": "wide",
+      "label": "Data Analysis Dashboard"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "monochrome"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Data",
+      "short_name": "Upload",
+      "description": "Upload a new dataset for analysis",
+      "url": "/upload",
+      "icons": [
+        {
+          "src": "/static/icons/icon-192.svg",
+          "type": "image/svg+xml",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Analytics",
+      "description": "View analytics dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/static/icons/icon-192.svg",
+          "type": "image/svg+xml",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "file_handlers": [
+    {
+      "action": "/upload",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.ms-excel": [".xls"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+dataanalysis",
+      "url": "/?data=%s"
+    }
+  ],
+  "handle_links": "preferred",
+  "capture_links": "existing-client-navigate"
+}
