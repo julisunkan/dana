@@ -269,16 +269,13 @@ document.getElementById('cleaning-form').addEventListener('submit', function(e) 
     
     if (checkedOptions.length === 0) {
         e.preventDefault();
-        alert('Please select at least one cleaning operation, or skip to the dashboard.');
+        showInlineNotification('Please select at least one cleaning operation, or skip to the dashboard.', 'warning');
         return false;
     }
     
-    const message = `You are about to apply the following cleaning operations:\n\n${checkedOptions.join('\n')}\n\nThis may modify your original data. Continue?`;
-    
-    if (!confirm(message)) {
-        e.preventDefault();
-        return false;
-    }
+    // Show confirmation inline instead of popup
+    const confirmationMessage = `Apply the following cleaning operations: ${checkedOptions.join(', ')}. This may modify your original data.`;
+    showInlineNotification(confirmationMessage, 'info', 8000);
 });
 </script>
 {% endblock %}

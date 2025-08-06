@@ -277,30 +277,38 @@ function setButtonLoading(button, loading) {
  * Show alert message
  */
 function showAlert(message, type = 'info', duration = 5000) {
-    const alertContainer = document.querySelector('.container');
-    if (!alertContainer) return;
+    showInlineNotification(message, type, duration);
+}
+
+function showInlineNotification(message, type = 'info', duration = 5000) {
+    const notificationArea = document.getElementById('notification-area');
+    const notificationMessage = document.getElementById('notification-message');
+    const notificationText = document.getElementById('notification-text');
+    const notificationIcon = document.getElementById('notification-icon');
     
-    const alertId = 'alert-' + Date.now();
-    const alertHTML = `
-        <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
-            <i class="fas fa-${getAlertIcon(type)} me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    `;
+    if (!notificationArea || !notificationMessage || !notificationText || !notificationIcon) return;
     
-    // Insert at the top of the container
-    alertContainer.insertAdjacentHTML('afterbegin', alertHTML);
+    // Set the alert type and icon
+    notificationMessage.className = `alert alert-${type} alert-dismissible fade show`;
+    notificationIcon.className = `fas fa-${getAlertIcon(type)} me-2`;
+    notificationText.textContent = message;
     
-    // Auto-remove after duration
+    // Show notification
+    notificationArea.style.display = 'block';
+    notificationArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Auto-hide after duration
     if (duration > 0) {
         setTimeout(() => {
-            const alert = document.getElementById(alertId);
-            if (alert) {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            }
+            hideNotification();
         }, duration);
+    }
+}
+
+function hideNotification() {
+    const notificationArea = document.getElementById('notification-area');
+    if (notificationArea) {
+        notificationArea.style.display = 'none';
     }
 }
 

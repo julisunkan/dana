@@ -80,6 +80,15 @@
 
     <!-- Main Content -->
     <main class="mobile-content">
+        <!-- Inline Notifications -->
+        <div id="notification-area" class="mb-3" style="display: none;">
+            <div id="notification-message" class="alert alert-dismissible fade show" role="alert">
+                <i id="notification-icon"></i>
+                <span id="notification-text"></span>
+                <button type="button" class="btn-close" onclick="hideNotification()"></button>
+            </div>
+        </div>
+        
         {% block content %}{% endblock %}
     </main>
 

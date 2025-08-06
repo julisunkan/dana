@@ -165,7 +165,7 @@ document.getElementById('chart-form').addEventListener('submit', async function(
     const title = document.getElementById('chart-title').value || `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} Chart`;
     
     if (!chartType) {
-        alert('Please select a chart type');
+        showInlineNotification('Please select a chart type', 'warning');
         return;
     }
     
@@ -200,10 +200,10 @@ document.getElementById('chart-form').addEventListener('submit', async function(
             // Scroll to chart
             document.getElementById('custom-chart-container').scrollIntoView({ behavior: 'smooth' });
         } else {
-            alert('Error generating chart: ' + data.error);
+            showInlineNotification('Error generating chart: ' + data.error, 'danger');
         }
     } catch (error) {
-        alert('Error generating chart: ' + error.message);
+        showInlineNotification('Error generating chart: ' + error.message, 'danger');
     } finally {
         // Restore button state
         submitBtn.innerHTML = originalText;
@@ -226,18 +226,50 @@ document.getElementById('chart-type').addEventListener('change', function() {
     }
 });
 
-// Edit chart title function
+// Edit chart title function with inline input
 function editChartTitle(button = null, currentTitle = '') {
-    const title = currentTitle || (button ? button.closest('.card-header').querySelector('h6').textContent : document.getElementById('custom-chart-title').textContent);
-    const newTitle = prompt('Enter new chart title:', title);
+    const titleElement = button ? button.closest('.card-header').querySelector('h6') : document.getElementById('custom-chart-title');
+    const currentText = currentTitle || titleElement.textContent;
     
-    if (newTitle && newTitle.trim()) {
-        if (button) {
-            button.closest('.card-header').querySelector('h6').textContent = newTitle.trim();
+    // Create inline input field
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.className = 'form-control form-control-sm d-inline-block';
+    input.style.width = 'auto';
+    input.style.minWidth = '200px';
+    
+    // Replace title with input
+    const originalContent = titleElement.innerHTML;
+    titleElement.innerHTML = '';
+    titleElement.appendChild(input);
+    
+    // Handle save/cancel
+    function saveTitle() {
+        const newTitle = input.value.trim();
+        if (newTitle) {
+            titleElement.textContent = newTitle;
+            showInlineNotification('Chart title updated', 'success', 2000);
         } else {
-            document.getElementById('custom-chart-title').textContent = newTitle.trim();
+            titleElement.innerHTML = originalContent;
         }
     }
+    
+    function cancelEdit() {
+        titleElement.innerHTML = originalContent;
+    }
+    
+    input.addEventListener('blur', saveTitle);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            saveTitle();
+        } else if (e.key === 'Escape') {
+            cancelEdit();
+        }
+    });
+    
+    input.focus();
+    input.select();
 }
 
 // Download chart as PNG function
@@ -258,10 +290,10 @@ function downloadChart(chartId) {
                 filename: filename
             }).catch(error => {
                 console.error('Error downloading chart:', error);
-                alert('Error downloading chart. Please try again.');
+                showInlineNotification('Error downloading chart. Please try again.', 'danger');
             });
         } else {
-            alert('Chart not found or Plotly not loaded.');
+            showInlineNotification('Chart not found or Plotly not loaded.', 'warning');
         }
     }
 }

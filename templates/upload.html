@@ -155,14 +155,14 @@ function handleFileSelect(file) {
     const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
     
     if (!allowedTypes.includes(fileExtension)) {
-        alert('Please select a CSV or Excel file');
+        showInlineNotification('Please select a CSV or Excel file', 'warning');
         return;
     }
     
     // Validate file size (16MB)
     const maxSize = 16 * 1024 * 1024;
     if (file.size > maxSize) {
-        alert('File size must be less than 16MB');
+        showInlineNotification('File size must be less than 16MB', 'warning');
         return;
     }
     
@@ -212,14 +212,14 @@ uploadForm.addEventListener('submit', (e) => {
             // Redirect to preview page
             window.location.href = '/preview';
         } else {
-            alert('Upload failed. Please try again.');
+            showInlineNotification('Upload failed. Please try again.', 'danger');
             progressBar.style.display = 'none';
         }
     });
     
     // Error handler
     xhr.addEventListener('error', () => {
-        alert('Upload failed. Please try again.');
+        showInlineNotification('Upload failed. Please try again.', 'danger');
         progressBar.style.display = 'none';
     });
     
