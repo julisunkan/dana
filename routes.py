@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 data_processor = DataProcessor()
 try:
     chart_generator = ChartGenerator()
-except ImportError as e:
-    logger.error(f"Error importing chart generator: {e}")
+    logger.info("Chart generator initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing chart generator: {e}")
     chart_generator = None
 export_handler = ExportHandler()
 
@@ -264,6 +265,9 @@ def generate_chart():
     if 'current_file' not in session:
         return jsonify({'error': 'No file uploaded'}), 400
     
+    if chart_generator is None:
+        return jsonify({'error': 'Chart generation is not available. Please check the system configuration.'}), 500
+    
     try:
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], session['current_file'])
         df = data_processor.load_data(file_path)
@@ -280,6 +284,7 @@ def generate_chart():
         y_column = json_data.get('y_column')
         title = json_data.get('title', f'{chart_type.title()} Chart' if chart_type else 'Chart')
         
+        logger.info(f"Generating chart: type={chart_type}, x={x_column}, y={y_column}")
         chart_html = None
         
         if chart_type == 'bar':

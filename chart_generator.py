@@ -1,13 +1,27 @@
-import plotly.graph_objects as go
-import plotly.express as px
-import pandas as pd
-import numpy as np
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    import pandas as pd
+    import numpy as np
+    PLOTLY_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: Plotly not available: {e}")
+    PLOTLY_AVAILABLE = False
+    # Create dummy objects to prevent import errors
+    class DummyPlotly:
+        def __getattr__(self, name):
+            return lambda *args, **kwargs: None
+    go = DummyPlotly()
+    px = DummyPlotly()
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 class ChartGenerator:
     def __init__(self):
+        if not PLOTLY_AVAILABLE:
+            raise ImportError("Plotly is not available for chart generation")
         self.theme = 'plotly_white'  # Colorful theme for better visibility
         self.color_palette = px.colors.qualitative.Set3
     
