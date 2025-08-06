@@ -73,32 +73,20 @@ class PWAManager {
      * Setup install prompt
      */
     setupInstallPrompt() {
-        // Listen for beforeinstallprompt event
+        // Listen for beforeinstallprompt event but don't show banner
         window.addEventListener('beforeinstallprompt', (e) => {
             console.log('beforeinstallprompt event fired');
             
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            // Prevent Chrome from automatically showing the prompt
             e.preventDefault();
             
-            // Store the event for later use
+            // Store the event but don't show banner
             this.deferredPrompt = e;
-            
-            // Show custom install banner
-            this.showInstallBanner();
         });
-
-        // Handle install button click
-        const installBtn = document.getElementById('install-btn');
-        if (installBtn) {
-            installBtn.addEventListener('click', () => {
-                this.promptInstall();
-            });
-        }
 
         // Listen for app installed event
         window.addEventListener('appinstalled', () => {
             console.log('PWA was installed');
-            this.hideInstallBanner();
             this.deferredPrompt = null;
             
             // Track installation
@@ -106,34 +94,7 @@ class PWAManager {
         });
     }
 
-    /**
-     * Show install banner
-     */
-    showInstallBanner() {
-        const banner = document.getElementById('install-banner');
-        if (banner && !this.isAppInstalled()) {
-            banner.style.display = 'block';
-            banner.classList.add('show');
-            
-            // Auto-hide after 10 seconds
-            setTimeout(() => {
-                this.hideInstallBanner();
-            }, 10000);
-        }
-    }
 
-    /**
-     * Hide install banner
-     */
-    hideInstallBanner() {
-        const banner = document.getElementById('install-banner');
-        if (banner) {
-            banner.classList.remove('show');
-            setTimeout(() => {
-                banner.style.display = 'none';
-            }, 300);
-        }
-    }
 
     /**
      * Check if app is already installed
@@ -144,34 +105,7 @@ class PWAManager {
                window.navigator.standalone === true;
     }
 
-    /**
-     * Prompt user to install app
-     */
-    async promptInstall() {
-        if (!this.deferredPrompt) {
-            console.log('No install prompt available');
-            return;
-        }
 
-        // Show the install prompt
-        this.deferredPrompt.prompt();
-
-        // Wait for the user to respond
-        const { outcome } = await this.deferredPrompt.userChoice;
-        console.log('Install prompt outcome:', outcome);
-
-        if (outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-            this.trackEvent('pwa_install_accepted');
-        } else {
-            console.log('User dismissed the install prompt');
-            this.trackEvent('pwa_install_dismissed');
-        }
-
-        // Clear the deferredPrompt
-        this.deferredPrompt = null;
-        this.hideInstallBanner();
-    }
 
     /**
      * Setup offline handling
