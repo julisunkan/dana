@@ -20,5 +20,14 @@ app.config['EXPORT_FOLDER'] = 'exports'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['EXPORT_FOLDER'], exist_ok=True)
 
+# Custom template filters
+@app.template_filter('number_format')
+def number_format(value):
+    """Format numbers with commas as thousands separators"""
+    try:
+        return "{:,}".format(int(value))
+    except (ValueError, TypeError):
+        return str(value)
+
 # Import routes after app creation to avoid circular imports
 from routes import *
