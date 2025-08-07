@@ -532,24 +532,7 @@ function updateBackButton() {
     }
 }
 
-/**
- * Update time in status bar
- */
-function updateTime() {
-    const timeElement = document.getElementById('current-time');
-    if (timeElement) {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false 
-        });
-        timeElement.textContent = timeString;
-    }
-}
 
-// Update time every minute
-setInterval(updateTime, 60000);
 
 /**
  * Initialize mobile toasts
