@@ -1,8 +1,8 @@
 // Service Worker for Advanced Data Analyzer
 // Handles caching, offline functionality, and background sync
 
-const CACHE_NAME = 'advanced-data-analyzer-v1.0.0';
-const DYNAMIC_CACHE = 'advanced-data-analyzer-dynamic-v1.0.0';
+const CACHE_NAME = 'advanced-data-analyzer-v1.0.1';
+const DYNAMIC_CACHE = 'advanced-data-analyzer-dynamic-v1.0.1';
 
 // Assets to cache on install
 const STATIC_ASSETS = [
