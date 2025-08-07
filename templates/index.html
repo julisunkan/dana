@@ -1,8 +1,5 @@
-{% extends "base.html" %}
-
-{% block title %}Home - Advanced Data Analyzer{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Home - Advanced Data Analyzer{%
+endblock %} {% block content %}
 <div class="hero-section text-center mb-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -11,8 +8,9 @@
                 Advanced Data Analyzer
             </h1>
             <p class="lead text-muted mb-4">
-                Upload, clean, analyze, and visualize your data with our powerful web-based platform. 
-                Get insights from your CSV and Excel files in minutes!
+                Upload, clean, analyze, and visualize your data with this
+                powerful mobile app. Get insights from your CSV and Excel files
+                in minutes!
             </p>
             <a href="{{ url_for('upload') }}" class="btn btn-primary btn-lg">
                 <i class="fas fa-upload me-2"></i>
@@ -30,11 +28,12 @@
             </div>
             <h5>Easy Upload</h5>
             <p class="text-muted">
-                Drag and drop CSV or Excel files. Automatic encoding detection for seamless import.
+                Drag and drop CSV or Excel files. Automatic encoding detection
+                for seamless import.
             </p>
         </div>
     </div>
-    
+
     <div class="col-md-6 col-lg-3">
         <div class="feature-card text-center h-100">
             <div class="feature-icon">
@@ -42,11 +41,12 @@
             </div>
             <h5>Data Cleaning</h5>
             <p class="text-muted">
-                Handle missing values, remove duplicates, and detect outliers automatically.
+                Handle missing values, remove duplicates, and detect outliers
+                automatically.
             </p>
         </div>
     </div>
-    
+
     <div class="col-md-6 col-lg-3">
         <div class="feature-card text-center h-100">
             <div class="feature-icon">
@@ -54,11 +54,12 @@
             </div>
             <h5>Visualizations</h5>
             <p class="text-muted">
-                Generate interactive charts: bar, line, scatter, pie, box plots, and histograms.
+                Generate interactive charts: bar, line, scatter, pie, box plots,
+                and histograms.
             </p>
         </div>
     </div>
-    
+
     <div class="col-md-6 col-lg-3">
         <div class="feature-card text-center h-100">
             <div class="feature-icon">
@@ -66,7 +67,8 @@
             </div>
             <h5>Export Results</h5>
             <p class="text-muted">
-                Download cleaned data and comprehensive analysis reports in multiple formats.
+                Download cleaned data and comprehensive analysis reports in
+                multiple formats.
             </p>
         </div>
     </div>
@@ -77,7 +79,7 @@
         <i class="fas fa-cogs me-2"></i>
         How It Works
     </h2>
-    
+
     <div class="row g-4">
         <div class="col-lg-2 col-md-4 col-6">
             <div class="workflow-step text-center">
@@ -86,7 +88,7 @@
                 <h6>Upload Data</h6>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-6">
             <div class="workflow-step text-center">
                 <div class="step-number">2</div>
@@ -94,7 +96,7 @@
                 <h6>Preview</h6>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-6">
             <div class="workflow-step text-center">
                 <div class="step-number">3</div>
@@ -102,7 +104,7 @@
                 <h6>Clean Data</h6>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-6">
             <div class="workflow-step text-center">
                 <div class="step-number">4</div>
@@ -110,7 +112,7 @@
                 <h6>Analyze</h6>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-6">
             <div class="workflow-step text-center">
                 <div class="step-number">5</div>
@@ -118,7 +120,7 @@
                 <h6>Visualize</h6>
             </div>
         </div>
-        
+
         <div class="col-lg-2 col-md-4 col-6">
             <div class="workflow-step text-center">
                 <div class="step-number">6</div>
@@ -164,5 +166,4 @@
         </div>
     </div>
 </div>
-{% endif %}
-{% endblock %}
+{% endif %} {% endblock %}

@@ -272,31 +272,7 @@ function editChartTitle(button = null, currentTitle = '') {
     input.select();
 }
 
-// Download chart as PNG function
-function downloadChart(chartId) {
-    const chartElement = document.getElementById(chartId);
-    
-    if (chartElement) {
-        // Find the Plotly chart within the element
-        const plotlyDiv = chartElement.querySelector('.plotly-graph-div') || chartElement;
-        
-        if (plotlyDiv && typeof Plotly !== 'undefined') {
-            const filename = `chart_${Date.now()}.png`;
-            
-            Plotly.downloadImage(plotlyDiv, {
-                format: 'png',
-                width: 1200,
-                height: 600,
-                filename: filename
-            }).catch(error => {
-                console.error('Error downloading chart:', error);
-                showInlineNotification('Error downloading chart. Please try again.', 'danger');
-            });
-        } else {
-            showInlineNotification('Chart not found or Plotly not loaded.', 'warning');
-        }
-    }
-}
+
 
 // Auto-resize charts when window resizes
 window.addEventListener('resize', function() {

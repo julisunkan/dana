@@ -51,7 +51,11 @@ class ChartGenerator:
                 showlegend=False
             )
             
-            return fig.to_html(include_plotlyjs=False, div_id=f"chart-{hash(str(x_data))}")
+            return fig.to_html(
+                include_plotlyjs=False, 
+                div_id=f"chart-{hash(str(x_data))}", 
+                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+            )
             
         except Exception as e:
             logger.error(f"Error creating bar chart: {str(e)}")
@@ -86,7 +90,11 @@ class ChartGenerator:
                 showlegend=False
             )
             
-            return fig.to_html(include_plotlyjs=False, div_id=f"chart-{hash(str(df_sorted[x_column].values))}")
+            return fig.to_html(
+                include_plotlyjs=False, 
+                div_id=f"chart-{hash(str(df_sorted[x_column].values))}", 
+                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+            )
             
         except Exception as e:
             logger.error(f"Error creating line chart: {str(e)}")
@@ -128,7 +136,11 @@ class ChartGenerator:
                 showlegend=False
             )
             
-            return fig.to_html(include_plotlyjs=False, div_id=f"chart-{hash(str(clean_df[x_column].values))}")
+            return fig.to_html(
+                include_plotlyjs=False, 
+                div_id=f"chart-{hash(str(clean_df[x_column].values))}", 
+                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+            )
             
         except Exception as e:
             logger.error(f"Error creating scatter plot: {str(e)}")
@@ -165,7 +177,11 @@ class ChartGenerator:
                 showlegend=False
             )
             
-            return fig.to_html(include_plotlyjs=False, div_id=f"chart-{hash(str(clean_data.values))}")
+            return fig.to_html(
+                include_plotlyjs=False, 
+                div_id=f"chart-{hash(str(clean_data.values))}", 
+                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+            )
             
         except Exception as e:
             logger.error(f"Error creating histogram: {str(e)}")
@@ -199,7 +215,11 @@ class ChartGenerator:
                 height=500
             )
             
-            return fig.to_html(include_plotlyjs=False, div_id=f"chart-{hash(str(valid_columns))}")
+            return fig.to_html(
+                include_plotlyjs=False, 
+                div_id=f"chart-{hash(str(valid_columns))}", 
+                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+            )
             
         except Exception as e:
             logger.error(f"Error creating box plot: {str(e)}")
@@ -226,7 +246,11 @@ class ChartGenerator:
                 height=500
             )
             
-            return fig.to_html(include_plotlyjs=False, div_id=f"chart-{hash(str(labels))}")
+            return fig.to_html(
+                include_plotlyjs=False, 
+                div_id=f"chart-{hash(str(labels))}", 
+                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+            )
             
         except Exception as e:
             logger.error(f"Error creating pie chart: {str(e)}")
