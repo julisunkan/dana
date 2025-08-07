@@ -54,7 +54,7 @@ class ChartGenerator:
             return fig.to_html(
                 include_plotlyjs=False, 
                 div_id=f"chart-{hash(str(x_data))}", 
-                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+                config={'displayModeBar': False}
             )
             
         except Exception as e:
@@ -93,7 +93,7 @@ class ChartGenerator:
             return fig.to_html(
                 include_plotlyjs=False, 
                 div_id=f"chart-{hash(str(df_sorted[x_column].values))}", 
-                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+                config={'displayModeBar': False}
             )
             
         except Exception as e:
@@ -139,7 +139,7 @@ class ChartGenerator:
             return fig.to_html(
                 include_plotlyjs=False, 
                 div_id=f"chart-{hash(str(clean_df[x_column].values))}", 
-                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+                config={'displayModeBar': False}
             )
             
         except Exception as e:
@@ -180,7 +180,7 @@ class ChartGenerator:
             return fig.to_html(
                 include_plotlyjs=False, 
                 div_id=f"chart-{hash(str(clean_data.values))}", 
-                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+                config={'displayModeBar': False}
             )
             
         except Exception as e:
@@ -218,7 +218,7 @@ class ChartGenerator:
             return fig.to_html(
                 include_plotlyjs=False, 
                 div_id=f"chart-{hash(str(valid_columns))}", 
-                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+                config={'displayModeBar': False}
             )
             
         except Exception as e:
@@ -249,7 +249,7 @@ class ChartGenerator:
             return fig.to_html(
                 include_plotlyjs=False, 
                 div_id=f"chart-{hash(str(labels))}", 
-                config={'displayModeBar': True, 'modeBarButtonsToRemove': ['toImage', 'downloadImage', 'saveImage'], 'displaylogo': False}
+                config={'displayModeBar': False}
             )
             
         except Exception as e:
